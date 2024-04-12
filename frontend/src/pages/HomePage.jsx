@@ -10,7 +10,7 @@ const HomePage = () => {
     },[])
 
     const getProfile = async() => {
-        let response = await fetch('http://127.0.0.1:8000/api/profile', {
+        let response = await fetch( import.meta.env.VITE_API_URL + 'profile', {
         method: 'GET',
         headers:{
             'Content-Type': 'application/json',

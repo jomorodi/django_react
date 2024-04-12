@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react'
-import jwtDecode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import { useNavigate } from 'react-router-dom'
 
 const AuthContext = createContext()
@@ -16,7 +16,7 @@ export const AuthProvider = ({children}) => {
 
     let loginUser = async (e) => {
         e.preventDefault()
-        const response = await fetch('http://127.0.0.1:8000/api/token/', {
+        const response = await fetch( import.meta.env.VITE_API_URL + 'token/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -45,7 +45,7 @@ export const AuthProvider = ({children}) => {
     }
 
     const updateToken = async () => {
-        const response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
+        const response = await fetch( import.meta.env.VITE_API_URL  + 'token/refresh/', {
             method: 'POST',
             headers: {
                 'Content-Type':'application/json'
