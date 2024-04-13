@@ -1,11 +1,16 @@
-FROM node:14.17.3
+FROM node:latest as builder
 
 WORKDIR /frontend
 
+COPY package.json .
+RUN npm install 
+
+
 COPY . .
 
-RUN npm install
+RUN npm run build 
 
-EXPOSE 3000
+EXPOSE 5173
 
-CMD ["npm", "start"]
+CMD ["npm", "run" , "dev"]
+

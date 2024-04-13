@@ -9,4 +9,4 @@ RUN pip install django django-cors-headers djangorestframework djangorestframewo
 # copy from the current directory of the Dockerfile to /api in the image
 COPY . . 
 
-EXPOSE 8000
+EXPOSE 9002
