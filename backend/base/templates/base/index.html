@@ -40,6 +40,9 @@
 
 <body>
 
+
+
+
   <div class="hero_area">
     <!-- header section strats -->
     <header class="header_section">
@@ -86,6 +89,25 @@
         </nav>
       </div>
     </header>
+
+
+ <!-- Create Test User section strats -->
+    <div class="form_container">
+      <form action="{% url 'generate_test_users'%}" method="post" class="form-example">
+        {% csrf_token %}
+        
+        <div class="btn_box">
+          <button>
+           Create Test User
+          </button>
+        </div>
+      </form>
+  
+    </div>
+
+ <!-- end Create Test User section -->
+
+
     <!-- end header section -->
     <!-- slider section -->
     <section class="slider_section ">

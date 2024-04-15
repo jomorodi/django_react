@@ -21,7 +21,8 @@ from base import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('base.api.urls')),
-    path ("" , views.homePage , name = "homePage" )
+    path ("" , views.homePage , name = "homePage" ),
+    path ('testUserCreation/' , views.generate_test_users , name="generate_test_users")
 ]
 
 
