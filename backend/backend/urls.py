@@ -21,10 +21,15 @@ from base import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('base.api.urls')),
+    path ('shop/', include ('base.urls')),
     path ("" , views.homePage , name = "homePage" ),
     path ('testUserCreation/' , views.generate_test_users , name="generate_test_users")
 ]
 
+urlpatterns += [
+    path("accounts/signup/", views.SignUpView.as_view(), name="signup"),
+    path('accounts/', include('django.contrib.auth.urls')),
+]
 
 # Use static() to add url mapping to serve static files during development (only)
 from django.conf import settings
