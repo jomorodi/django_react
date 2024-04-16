@@ -71,3 +71,10 @@ class SignUpView(generic.CreateView):
     template_name = "registration/signup.html" 
 
 
+
+
+class ItemCreate(generic.edit.CreateView):
+    model = Item
+    fields = ['description', 'image', 'price', 'seller' , 'date_added']
+    initial = {'date_of_death': '11/11/2023'}
+    permission_required = 'base.add_ item'
