@@ -14,4 +14,10 @@ urlpatterns += [
  
 ]
 
+urlpatterns += [
+    path('search/', views.ItemSearchListView.as_view(), name='item-search'),
+ 
+]
+
+
 #   path('item/<int:pk>/update/', views.AuthorUpdate.as_view(), name='author-update'),   path('item/<int:pk>/delete/', views.AuthorDelete.as_view(), name='author-delete'),
