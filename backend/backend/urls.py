@@ -28,8 +28,12 @@ urlpatterns = [
 
 urlpatterns += [
     path("accounts/signup/", views.SignUpView.as_view(), name="signup"),
+    path("accounts/edit/", views.UpdateUserProfile.as_view(), name="edit-account-password"),
+    path('accounts/change-password/', views.change_password, name='change_password'),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
+
+
 
 # Use static() to add url mapping to serve static files during development (only)
 from django.conf import settings

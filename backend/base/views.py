@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render , redirect
 from django.contrib.auth.models import User
 from base.models import Item
 from django.http import HttpResponse , JsonResponse
@@ -6,6 +6,14 @@ from django.views import generic
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
+from django.utils.translation import ugettext as _
+
+
 import random
 import datetime
 MAX_ITEM_PRICE = 100
@@ -94,3 +102,39 @@ class ItemSearchListView(generic.ListView):
 
                 
         return Item.objects.all().filter(title__icontains = search ).filter (is_sold=False)
+    
+    
+
+
+class UpdateUserProfile(generic.UpdateView):
+    model = User
+    fields = ['password']
+    template_name = "registration/password_reset_confirm.html" 
+    slug_field = 'username'
+    slug_url_kwarg = 'slug'
+   
+    
+
+class UpdatePassword(PasswordChangeView):
+    form_class = PasswordChangeForm
+    success_url = '/user/edit-profile'
+    template_name = "base/change_password.html" 
+
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, _('Your password was successfully updated!'))
+            return redirect('password_reset_complete')
+        else:
+            messages.error(request, _('Please correct the error below.'))
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'base/change_password.html', {
+        'form': form
+    })
+    
