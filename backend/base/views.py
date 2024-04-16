@@ -1,6 +1,7 @@
-from django.shortcuts import render , redirect
+from django.shortcuts import render , redirect , get_object_or_404
 from django.contrib.auth.models import User
 from base.models import Item
+from base.forms import ItemPriceEditForm
 from django.http import HttpResponse , JsonResponse
 from django.views import generic
 from django.contrib.auth.forms import UserCreationForm
@@ -138,3 +139,33 @@ def change_password(request):
         'form': form
     })
     
+
+
+@login_required
+def user_items(request):
+    user = request.user
+    on_sale_items = Item.objects.filter(seller=user, is_sold=False)
+    sold_items = Item.objects.filter(seller=user, is_sold=True)
+    purchased_items = Item.objects.filter(transaction__buyer=user)
+
+    context = {
+        'on_sale_items': on_sale_items,
+        'sold_items': sold_items,
+        'purchased_items': purchased_items,
+    }
+    return render(request, 'base/user_items.html', context)
+
+@login_required
+def edit_item_price(request, item_id):
+    item = get_object_or_404(Item, pk=item_id, seller=request.user, is_sold=False)
+    
+    if request.method == 'POST':
+        form = ItemPriceEditForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            
+            return redirect(item)  # Redirect to the user's items page after successful edit
+    else:
+        form = ItemPriceEditForm(instance=item)
+        
+    return render(request, 'base/edit_item_price.html', {'form': form, 'item': item})

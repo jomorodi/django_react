@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Items</title>
+</head>
+<body>
+    <h2>My Items</h2>
+
+    <h3>On Sale Items</h3>
+    <ul>
+        {% for item in on_sale_items %}
+            <li>{{ item.title }}</li>
+        {% empty %}
+            <li>No items on sale.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Sold Items</h3>
+    <ul>
+        {% for item in sold_items %}
+            <li>{{ item.title }}</li>
+        {% empty %}
+            <li>No items sold.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>Purchased Items</h3>
+    <ul>
+        {% for item in purchased_items %}
+            <li>{{ item.title }}</li>
+        {% empty %}
+            <li>No items purchased.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

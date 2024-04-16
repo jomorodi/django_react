@@ -28,6 +28,7 @@ urlpatterns = [
 
 urlpatterns += [
     path("accounts/signup/", views.SignUpView.as_view(), name="signup"),
+    path('accounts/my-items/', views.user_items, name='my_items'),
     path("accounts/edit/", views.UpdateUserProfile.as_view(), name="edit-account-password"),
     path('accounts/change-password/', views.change_password, name='change_password'),
     path('accounts/', include('django.contrib.auth.urls')),
