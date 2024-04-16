@@ -1,0 +1,26 @@
+
+{% comment %}
+
+{% extends "base_generic.html" %}
+
+{% endcomment %}
+
+{% block content %}
+    <h1>Book List</h1>
+
+    {% if item_list %}
+    <ul>
+
+      {% for item in item_list %}
+      <li>
+        <a href="{{ item.get_absolute_url }}">{{ item.title }}</a> ({{item.description}}) ({{item.price}}) ({{item.date_added}})
+      </li>
+      {% endfor %}
+
+    </ul>
+
+    {% else %}
+      <p>There are no item for sale.</p>
+    {% endif %}       
+{% endblock %}
+
