@@ -28,6 +28,11 @@ def homePage (request):
     context = {}
     return render(request, "base/index.html", context)
 
+def shopPage (request):
+
+    context = {}
+    return render(request, "base/shop.html", context)
+
 
 
 
