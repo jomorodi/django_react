@@ -1,6 +1,6 @@
 from django.shortcuts import render , redirect , get_object_or_404
 from django.contrib.auth.models import User
-from base.models import Item , Cart
+from base.models import Item , Cart , Transaction
 from base.forms import ItemPriceEditForm , ItemForm
 from django.http import HttpResponse , JsonResponse
 from django.views import generic
@@ -37,12 +37,13 @@ def generate_test_users(request):
         User.objects.filter(username__startswith='testuser').delete()
         Item.objects.all().delete()
         # Generate new test users
+        z = 1
         for i in range(1, 7):
             username =  f'testuser{i}'
             email = f'{username}@shop.aa'
             password = f'pass{i}'
             user = User.objects.create_user(username=username, email=email, password=password)
-            z = 1
+            
             if i <= 3 :
                  for j in range(1, 11):
                     title = f'title{z}'
@@ -208,7 +209,7 @@ def remove_from_cart(request, cart_item_id):
 
 @login_required
 def checkout(request):
-    cart_items = Cart.objects.filter(user=request.user)
+    cart_items = Cart.objects.filter(user=request.user).filter(item__is_sold=False)
     total_price = sum(cart_item.item.price * cart_item.quantity for cart_item in cart_items)
     
     if request.method == 'POST':
@@ -227,11 +228,14 @@ def checkout(request):
         for cart_item in cart_items:
             cart_item.item.is_sold = True
             cart_item.item.save()
+            transaction = Transaction.objects.create(buyer=request.user, item=item)  # Create a transaction for each item
+            transaction.save()
             cart_item.delete()
         
         messages.success(request, "Transaction successful. Items have been marked as sold.")
         return redirect('my_items')
     
+    return render(request, 'base/checkout.html', {'cart_items': cart_items, 'total_price': total_price})
 
 
     

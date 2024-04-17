@@ -14,6 +14,11 @@
       {% for item in item_list %}
       <li>
         <a href="{{ item.get_absolute_url }}">{{ item.title }}</a> ({{item.description}}) ({{item.price}}) ({{item.date_added}}) (seller is:{{item.seller}})
+        
+        {% if user != item.seller %}
+        <a href="{% url 'add_to_cart' item.id %}">Add  to Cart </a>
+        {% endif %}
+        
       </li>
       </li>
       {% endfor %}
