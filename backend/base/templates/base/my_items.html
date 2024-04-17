@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Items</title>
+</head>
+<body>
+    <h2>My Items</h2>
+    
+    <ul>
+        {% for item in my_items %}
+            <li>{{ item.title }} - ${{ item.price }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

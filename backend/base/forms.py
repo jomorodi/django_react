@@ -17,3 +17,8 @@ class ItemPriceEditForm(forms.ModelForm):
         model = Item
         fields = ['price']
 
+
+class ItemForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = ['title', 'description', 'price', 'image' ] 

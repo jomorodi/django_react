@@ -6,14 +6,15 @@
 {% endcomment %}
 
 {% block content %}
-    <h1>Book List</h1>
+    <h1>Item List</h1>
 
     {% if item_list %}
     <ul>
 
       {% for item in item_list %}
       <li>
-        <a href="{{ item.get_absolute_url }}">{{ item.title }}</a> ({{item.description}}) ({{item.price}}) ({{item.date_added}})
+        <a href="{{ item.get_absolute_url }}">{{ item.title }}</a> ({{item.description}}) ({{item.price}}) ({{item.date_added}}) (seller is:{{item.seller}})
+      </li>
       </li>
       {% endfor %}
 

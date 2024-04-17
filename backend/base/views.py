@@ -1,12 +1,12 @@
 from django.shortcuts import render , redirect , get_object_or_404
 from django.contrib.auth.models import User
-from base.models import Item
-from base.forms import ItemPriceEditForm
+from base.models import Item , Cart
+from base.forms import ItemPriceEditForm , ItemForm
 from django.http import HttpResponse , JsonResponse
 from django.views import generic
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin , LoginRequiredMixin
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -35,20 +35,23 @@ def generate_test_users(request):
     try:
         # Delete existing test users if they already exist
         User.objects.filter(username__startswith='testuser').delete()
-        
+        Item.objects.all().delete()
         # Generate new test users
         for i in range(1, 7):
-            username = f'testuser{i}'
+            username =  f'testuser{i}'
             email = f'{username}@shop.aa'
             password = f'pass{i}'
             user = User.objects.create_user(username=username, email=email, password=password)
-            
+            z = 1
             if i <= 3 :
-                 title = f'title{i}'
-                 description = f'description{i}'
-                 price = random.randint(MIN_ITEM_PRICE , MAX_ITEM_PRICE )
-                 date_added = datetime.datetime.now()
-                 item = Item.objects.create(title=title , description=description , price=price , seller=user , date_added = date_added)
+                 for j in range(1, 11):
+                    title = f'title{z}'
+                    description = f'description{z}'
+                    price = random.randint(MIN_ITEM_PRICE , MAX_ITEM_PRICE )
+                    date_added = datetime.datetime.now()
+                    item = Item.objects.create(title=title , description=description , price=price , seller=user , date_added = date_added)
+                    z+=1
+                 
                  
         
         return HttpResponse("Test users successfully created.")
@@ -65,11 +68,11 @@ class ItemDetailView(generic.DetailView):
 class ItemListView(generic.ListView):
     """Generic class-based view for a list of books."""
     model = Item
-    paginate_by = 10
+    paginate_by = 20
     
     def get_queryset(self):
         
-        return Item.objects.all().filter(is_sold=False)
+        return Item.objects.all().filter(is_sold=False).order_by('id')
 
 
 
@@ -83,11 +86,11 @@ class SignUpView(generic.CreateView):
 
 
 
-class ItemCreate(PermissionRequiredMixin, generic.edit.CreateView):
+class ItemCreate(generic.edit.CreateView , LoginRequiredMixin):
     model = Item
     fields = ['description', 'image', 'price', 'seller' , 'date_added']
     initial = {'date_of_death': '11/11/2023'}
-    permission_required = 'base.add_ item'
+    #permission_required = 'base.add_ item'
 
 
 
@@ -106,21 +109,7 @@ class ItemSearchListView(generic.ListView):
     
     
 
-
-class UpdateUserProfile(generic.UpdateView):
-    model = User
-    fields = ['password']
-    template_name = "registration/password_reset_confirm.html" 
-    slug_field = 'username'
-    slug_url_kwarg = 'slug'
    
-    
-
-class UpdatePassword(PasswordChangeView):
-    form_class = PasswordChangeForm
-    success_url = '/user/edit-profile'
-    template_name = "base/change_password.html" 
-
 
 @login_required
 def change_password(request):
@@ -156,8 +145,10 @@ def user_items(request):
     return render(request, 'base/user_items.html', context)
 
 @login_required
-def edit_item_price(request, item_id):
-    item = get_object_or_404(Item, pk=item_id, seller=request.user, is_sold=False)
+def edit_item_price(request, title):
+    
+    item = get_object_or_404(Item, title=title, seller=request.user, is_sold=False)
+    #item = get_object_or_404(Item, title=title,  is_sold=False)
     
     if request.method == 'POST':
         form = ItemPriceEditForm(request.POST, instance=item)
@@ -167,5 +158,92 @@ def edit_item_price(request, item_id):
             return redirect(item)  # Redirect to the user's items page after successful edit
     else:
         form = ItemPriceEditForm(instance=item)
-        
+        print ("items is ", item)
     return render(request, 'base/edit_item_price.html', {'form': form, 'item': item})
+
+
+@login_required
+def add_item(request):
+    if request.method == 'POST':
+        form = ItemForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.seller = request.user
+            item.date_added = datetime.datetime.now()
+            item.save()
+            return redirect(item)  # Redirect to the user's items page after adding the item
+    else:
+        form = ItemForm()
+    
+    return render(request, 'base/add_item.html', {'form': form})
+
+
+
+@login_required
+def add_to_cart(request, item_id):
+    item = get_object_or_404(Item, pk=item_id)
+    
+    # Check if the user is trying to add their own item to the cart
+    if request.user == item.seller:
+        return redirect('item-detail', item_id=item_id)  # Redirect back to the item detail page
+    
+    # Check if the item is already in the user's cart
+    if Cart.objects.filter(user=request.user, item=item).exists():
+        # You can handle this case based on your application's requirements
+        # For example, you might want to display a message to the user that the item is already in their cart
+        return redirect('item-detail', item_id=item_id)
+    
+    # Add the item to the user's cart
+    Cart.objects.create(user=request.user, item=item)
+    
+    return redirect('cart')  # Redirect to the user's cart page
+
+
+@login_required
+def remove_from_cart(request, cart_item_id):
+    cart_item = get_object_or_404(Cart, pk=cart_item_id, user=request.user)
+    cart_item.delete()
+    return redirect('cart')
+
+
+@login_required
+def checkout(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    total_price = sum(cart_item.item.price * cart_item.quantity for cart_item in cart_items)
+    
+    if request.method == 'POST':
+        for cart_item in cart_items:
+            item = cart_item.item
+            if item.price != cart_item.item.price:
+                # Notify the user if the price of an item has changed
+                messages.warning(request, f"The price of '{item.title}' has changed. Please review before proceeding.")
+                return redirect('checkout')
+            if item.is_sold:
+                # Notify the user if an item is no longer available
+                messages.warning(request, f"The item '{item.title}' is no longer available.")
+                return redirect('checkout')
+        
+        # If all items are still available and their prices haven't changed, mark them as sold
+        for cart_item in cart_items:
+            cart_item.item.is_sold = True
+            cart_item.item.save()
+            cart_item.delete()
+        
+        messages.success(request, "Transaction successful. Items have been marked as sold.")
+        return redirect('my_items')
+    
+
+
+    
+@login_required
+def view_cart(request):
+    cart_items = Cart.objects.filter(user=request.user)
+    return render(request, 'base/cart.html', {'cart_items': cart_items})
+
+
+@login_required
+def view_my_items(request):
+    my_items = Item.objects.filter(seller=request.user)
+    return render(request, 'base/my_items.html', {'my_items': my_items})
+
+

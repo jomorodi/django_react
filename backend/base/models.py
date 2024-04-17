@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse 
+import datetime
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
@@ -19,7 +20,7 @@ class Item(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     seller = models.ForeignKey(User, on_delete=models.CASCADE)
     is_sold = models.BooleanField(default=False)
-    date_added = models.DateTimeField()
+    date_added = models.DateTimeField(auto_now_add=True)
 
 
     def get_absolute_url(self):
@@ -36,3 +37,11 @@ class Transaction(models.Model):
     purchase_date = models.DateTimeField(auto_now_add=True)
 
 
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Cart item {self.item} for user {self.user}"

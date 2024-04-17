@@ -6,6 +6,8 @@
 {% extends "base_generic.html" %}
 
 {% endcomment %}
+
+
 {% block content %}
 
 <h1>Title: {{ item.title }}</h1>
@@ -14,6 +16,7 @@
 <p><strong>Price:</strong> {{ item.price }}</p>
 <p><strong> Seller:</strong> {{ item.seller }}</p>
 <p><strong>Date_added:</strong> {{ item.date_added }}</p>
+<p><strong>Primary key:</strong>{{ item.pk }}</p>
 
 {% endblock %}
 
