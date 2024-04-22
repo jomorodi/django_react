@@ -1,6 +1,6 @@
 services:
   api:
-    build: ./backend        
+    build: ./Config/Backend
     ports:
       - "9006:9002"
     volumes:
@@ -8,9 +8,8 @@ services:
     command: bash -c "python manage.py runserver 0.0.0.0:9002"
 
   web:
-    build: ./frontend
+    build: ./Config/Frontend
     ports:
       - "3006:5173"
     volumes:
       - ./frontend:/frontend
-    
