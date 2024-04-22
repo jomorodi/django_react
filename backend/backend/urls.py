@@ -16,12 +16,12 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from base import views
+from base.views import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('base.api.urls')),
-    path ('shop/', include ('base.urls')),
+    path ('shop/', include ('base.urls.urls')),
     path ("" , views.homePage , name = "homePage" ),
     path ('testUserCreation/' , views.generate_test_users , name="generate_test_users")
 ]
