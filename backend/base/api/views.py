@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from base.serializer import ProfileSerializer
+from base.serializers.serializer import ProfileSerializer
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -26,3 +26,14 @@ def get_profile(request):
     profile = user.profile
     serializer = ProfileSerializer(profile, many=False)
     return Response(serializer.data)
+
+
+
+@api_view(['GET'])
+def get_routes(request):
+   routes = [
+       '/api/token',
+       '/api/token/refresh',
+       'api/token/verify/'
+   ]
+   return Response(routes)
