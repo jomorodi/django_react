@@ -36,6 +36,25 @@ export const AuthProvider = ({children}) => {
         }
     }
 
+
+    let createUser = async (e) => {
+
+        e.preventDefault()
+        
+        const response = await fetch( import.meta.env.VITE_API_URL + 'createUser/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: e.target.username.value, password: e.target.psw.value, email: e.target.email.value , first_name:e.target.first_name.value , last_name:e.target.last_name.value })
+        });
+        if (response.status === 200) {
+            
+            logoutUser ()   
+        }
+
+    }
+
     let logoutUser = () => {
         // e.preventDefault()
         localStorage.removeItem('authTokens')
@@ -72,6 +91,7 @@ export const AuthProvider = ({children}) => {
         authTokens:authTokens,
         loginUser:loginUser,
         logoutUser:logoutUser,
+        createUser:createUser,
     }
 
     useEffect(()=>{

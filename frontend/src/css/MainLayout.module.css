@@ -1,0 +1,39 @@
+.gridContainer{ 
+    display: grid;
+    grid-template-areas: 
+      "header header header"
+      "nav nav nav" 
+      "article article article"
+      "footer footer footer";
+    grid-template-rows: 60px 60px 1fr 60px;
+    grid-template-columns: 20% 1fr 20%;
+    grid-gap: 10px;
+    height: 100vh;
+    margin: 0;
+    }
+  header, footer, article, nav, aside {
+    padding: 20px;
+    
+  }
+  .gridContainer .pageHeader {
+    grid-area: header;
+  }
+  .gridContainer .pageFooter {
+    grid-area: footer;
+  }
+  .gridContainer .mainArticle { 
+    grid-area: article;      
+    }
+.gridContainer .mainNav { 
+    grid-area: nav; 
+    }
+  
+    .gridContainer .firstAside { 
+    grid-area: firstAside; 
+    
+    }
+  
+    .gridContainer .secondAside { 
+    grid-area: secondAside; 
+    
+    }

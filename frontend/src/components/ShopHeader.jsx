@@ -37,11 +37,7 @@ const ShopHeader = () => {
             <Link to="/Myitems" >Myitems</Link>
             
             </div>
-        <div>
-        <br /> <br /> <br />
-        {user && <p>Hello {user.username}!</p>}
-
-        </div>
+       
         <Outlet  />
         </>
     )
